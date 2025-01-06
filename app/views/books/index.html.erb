@@ -11,5 +11,20 @@
       <h2>Books</h2>
       <%= render 'index', books: @books%>
     </div>
+    <div>
+    <% if @user.favorited_by?(current_user) %>
+    <p>
+      <%= link_to books_path, method: :delete do %>
+        ♥<%= @user.favorites.count %> いいね
+      <% end %>
+    </p>
+    <% else %>
+    <p>
+      <%= link_to book_path, method: :post do %>
+        ♡<%= @user.favorites.count %> いいね
+      <% end %>
+    </p>
+    </div>
+  <% end %>
   </div>
 </div>
