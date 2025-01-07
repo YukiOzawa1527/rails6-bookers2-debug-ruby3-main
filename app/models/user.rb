@@ -12,17 +12,30 @@ class User < ApplicationRecord
   validates :name, length: { minimum: 2, maximum: 20 }, uniqueness: true
   validates :introduction, length: { maximum: 50 }
 
-  has_many :relationsip, foreign_key: :follower_id, dependent: :destroy
-  has_many :followers, through: :relationsips, source: :followed
-  has_many :reverse_of_relationsips, class_name: 'Relationsip', foreign_key: :followed_id, dependent: :destroy
-  has_many :followeds, through: :revers_of_relationsips, source: :follower
-
-  def is_followed_by?(user)
-    reverse_of_relationsips.find_by(follower_id: user.id).present?
-  end
+  # 自分がフォローされる（被フォロー）側の関係性
+  has_many :reverse_of_relationsips, class_name: "Relationsip", foreign_key: "followed_id", dependent: :destroy
+  # 被フォロー関係を通じて参照→自分をフォローしている人
+  has_many :followers, through: :reverse_of_relationsips, source: :follower
   
+  # 自分がフォローする（与フォロー）側の関係性
+  has_many :relationsips, class_name: "Relationsip", foreign_key: "follower_id", dependent: :destroy
+  # 与フォロー関係を通じて参照→自分がフォローしている人
+  has_many :followings, through: :relationsips, source: :followed
+
   
   def get_profile_image
     (profile_image.attached?) ? profile_image : 'no_image.jpg'
+  end
+
+  def follow(user)
+    relationsips.create(followed_id: user.id)
+  end
+
+  def unfollow(user)
+    relationsips.find_by(followed_id: user.id).destroy
+  end
+
+  def following?(user)
+    followings.include?(user)
   end
 end
