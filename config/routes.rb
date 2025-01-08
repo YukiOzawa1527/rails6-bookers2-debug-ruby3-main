@@ -14,5 +14,7 @@ Rails.application.routes.draw do
     get 'followings' => 'relationsips#followings', as: 'followings'
     get 'followers' => 'relationsips#followers', as: 'followers'
   end
+
+  get '/search', to: 'searches#search'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end
